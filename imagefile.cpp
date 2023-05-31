@@ -1,71 +1,192 @@
-/*********************************
- * Author(s): Emmitt Carter
- * Date: 05-22-2023
-*********************************/
-
 #include "imagefile.h"
+#include "pixel.h"
+#include "QFileInfo"
+#include <algorithm>
+#include <cmath>
+#include <QErrorMessage>
+#include <QColor>
 
-Image::Image(QString f) {
-    this->file = f;
-    find_file_type();
-    find_file_size();
-    find_px_area();
+using namespace std;
+
+// Explicit Constructor
+Image::Image(const QString &filePath) : imageRaw(filePath), filePath(filePath), imageValid(true)
+{
+    if(imageRaw.isNull())
+    {
+        this->imageValid = false;
+    }
+    imageRaw = imageRaw.convertToFormat(QImage::Format_ARGB32); // Auto Conversion for 32bit depth support
+    this->width = imageRaw.width();
+    this->height = imageRaw.height();
+
+    pixelBuffer.reserve(getSize());
+    initPixelBuffer();
+    pureFileName();
 }
 
-QString Image::get_file() {
-    return this->file;
+Image::Image(QImage &anImage) : imageRaw(nullptr), filePath(""), imageValid(true)
+{
+    this->imageRaw = anImage;
+    imageRaw = imageRaw.convertToFormat(QImage::Format_ARGB32);
+    this->width = imageRaw.width();
+    this->height = imageRaw.height();
+
+    pixelBuffer.reserve(getSize());
+    initPixelBuffer();
+    pureFileName();
 }
 
-string Image::get_fileType() {
-    return this->fileType;
+/*
+Image::Image(const Image& anImage) : imageRaw(nullptr), filePath(""), imageValid(true)
+{
+    *this = anImage;
+}*/
+
+
+// Private Helpers
+void Image::pureFileName()
+{
+    QFileInfo qFilename(filePath);
+    fileName = qFilename.fileName();
 }
 
-int Image::get_pxLong() {
-    return this->pxLong;
+void Image::initPixelBuffer()
+{
+    for(int y = 0; y < height; y++)         // Rows
+    {
+        for(int x = 0; x < width; x++)      // Columns
+        {
+            pixelBuffer.emplace_back(Pixel::fromQColor(imageRaw.pixelColor(x, y)));
+        }
+    }
 }
 
-int Image::get_pxWide() {
-    return this->pxWide;
+
+// Getters
+
+QString Image::getPath() const
+{
+    return this->filePath;
 }
 
-float Image::get_bytes() {
-    return this->bytes;
+QString Image::getFilename() const
+{
+    return this->fileName;
 }
 
-void Image::set_file(QString f) {
-    this->file = f;
+int Image::getWidth() const
+{
+    return this->width;
 }
 
-void Image::set_fileType(string s) {
-    this->fileType = s;
+int Image::getHeight() const
+{
+    return this->height;
 }
 
-void Image::set_pxLong(int l) {
-    this->pxLong = l;
+size_t Image::getSize() const
+{
+    return width * height;
 }
 
-void Image::set_pxWide(int w) {
-    this->pxWide = w;
+std::vector<Pixel>& Image::getPixelBuffer()
+{
+    return this->pixelBuffer;
 }
 
-void Image::set_bytes(float m) {
-    this->bytes = m;
+QImage& Image::getQImage()
+{
+    return this->imageRaw;
 }
 
-void Image::find_px_area() {
-    String cvstr(this->file.toStdString());
-    Mat m = imread(cvstr);
-    this->pxLong = m.size[0];
-    this->pxWide = m.size[1];
+
+
+// Setters
+
+void Image::setFilePath(QString filePath)
+{
+    this->filePath = filePath;
+    pureFileName();
 }
 
-void Image::find_file_size() {
-    QFileInfo f(this->file);
-    this->bytes = f.size();
+void Image::setWidth(int width)
+{
+    this->width = width;
 }
 
-void Image::find_file_type() {
-    QFileInfo f(this->file);
-    QString type = f.suffix();
-    this->fileType = type.toStdString();
+void Image::setHeight(int height)
+{
+    this->height = height;
 }
+
+void Image::setQImage(QImage &newImage)
+{
+    this->imageRaw = newImage;
+}
+
+void Image::setBuffer(std::vector<Pixel>& pixelBuffer)
+{
+    this->pixelBuffer = pixelBuffer;
+}
+
+void Image::setSize(size_t aSize)
+{
+    this->bytes = aSize;
+}
+
+
+
+// Other
+
+bool Image::save(const QString &outPath, int quality)
+{
+    updateBuffer();
+
+    // Saves the Image on Disk
+    return imageRaw.save(outPath, nullptr, quality);
+}
+
+void Image::updateBuffer()
+{
+    imageRaw = QImage(width, height, QImage::Format_ARGB32);
+
+    for(int y = 0; y < height; y++)         // Rows
+    {
+        for(int x = 0; x < width; x++)      // Columns
+        {
+            imageRaw.setPixelColor(x, y, Pixel::toQColor(pixelBuffer[y * width + x]));
+        }
+    }
+}
+
+bool Image::isValid() const
+{
+    return this->imageValid;
+}
+
+
+
+Image& Image::operator= (Image& anImage)
+{
+    if(this == &anImage)
+    {
+        return *this;
+    }
+
+    setFilePath(anImage.filePath);
+    setWidth(anImage.width);
+    setHeight(anImage.height);
+    setQImage(anImage.imageRaw);
+    setBuffer(anImage.pixelBuffer);
+
+
+
+
+    return *this;
+
+}
+
+
+
+
+

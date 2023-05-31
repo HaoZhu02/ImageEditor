@@ -1,51 +1,67 @@
-/*********************************
- * Author(s): Emmitt Carter
- * Date: 05-22-2023
-*********************************/
-#ifndef IMAGEFILE
-#define IMAGEFILE
+#ifndef IMAGEFILE_H
+#define IMAGEFILE_H
 
-#include <iostream>
-#include <QFileDialog>
-#include <QFile>
-#include <QFileInfo>
-#include <string>
-#include <opencv2/opencv.hpp>
+#include "pixel.h"
+#include <QString>
+#include <QImage>
+#include <vector>
 
 using namespace std;
-using namespace cv;
 
-/**
- *  Class for the image file selected
- *  by the user.
-**/
-class Image 
+class Image
 {
-    private:
-        QString file;
-        string fileType;
-        int pxLong;
-        int pxWide;
-        float bytes;
-    public:
-        // Constructor
-        Image(QString);
-        // Accessors
-        QString get_file();
-        string get_fileType();
-        int get_pxLong();
-        int get_pxWide();
-        float get_bytes();
-        // Mutators
-        void set_file(QString);
-        void set_fileType(string);
-        void set_pxLong(int);
-        void set_pxWide(int);
-        void set_bytes(float);
-        // Other
-        void find_px_area();
-        void find_file_size();
-        void find_file_type();
+
+private:
+    // Image
+    QImage imageRaw;
+    QString filePath;
+    QString fileName;
+
+    // Image Measurables
+    int width;
+    int height;
+    size_t bytes;
+
+    bool imageValid;
+
+    std::vector<Pixel> pixelBuffer;
+    void initPixelBuffer();
+    void pureFileName();
+
+
+public:
+    // Constructor
+    Image(const QString &path);
+    Image(QImage &anImage);
+    Image(const Image& anImage);
+
+    // Getters
+    QString getPath() const;
+    QString getFilename() const;
+    int getWidth() const;
+    int getHeight() const;
+    size_t getSize() const;
+    QImage& getQImage();
+    std::vector<Pixel>& getPixelBuffer();
+
+    // Setters
+    void setWidth(int width);
+    void setHeight(int height);
+    void setFilePath(QString filePath);
+    void setQImage(QImage &newImage);
+    void setBuffer(std::vector<Pixel>& pixelBuffer);
+    void setSize(size_t aSize);
+
+    // Other
+    bool save(const QString &outPath, int quality = -1);   //-1 is auto comporssion while 0-100 is quality range
+    //Image(Image &aImage) = delete;
+    void swapDimension();
+    void updateBuffer();
+    bool isValid() const;
+
+    Image& operator= (Image& anImage);
+
+
 };
 
 #endif
