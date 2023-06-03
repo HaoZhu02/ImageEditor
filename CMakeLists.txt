@@ -39,6 +39,8 @@ set(BACKEND
         backend/editingTools/resizetool.cpp
         backend/editingTools/grayscaletool.h
         backend/editingTools/grayscaletool.cpp
+        backend/editingTools/sharpentool.h
+        backend/editingTools/sharpentool.cpp
 )
 
 set(GUI
