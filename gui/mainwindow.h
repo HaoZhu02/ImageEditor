@@ -39,8 +39,7 @@ private slots:
     void on_actionAspect_Ratio_triggered();
     void on_actionResize_triggered();
     void on_actionGray_Scale_triggered();
-
-
+    void on_actionSharpen_triggered();
 
 protected slots:
     void zoomTool(bool zoomStatus);
