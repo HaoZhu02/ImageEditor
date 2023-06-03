@@ -187,6 +187,11 @@ Image& Image::operator= (Image& anImage)
 }
 
 
+void Image::swapDimension()
+{
+    swap(height, width);
+}
+
 
 
 
