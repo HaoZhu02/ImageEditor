@@ -24,7 +24,7 @@ public:
 
     // Verifiers
     bool isUndoStackEmpty();
-    bool isRedoStackEmtpy();
+    bool isRedoStackEmpty();
 };
 
 #endif // EDITINGMANAGER_H

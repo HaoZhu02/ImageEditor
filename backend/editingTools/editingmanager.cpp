@@ -42,7 +42,7 @@ bool EditingManager::isUndoStackEmpty()
 }
 
 
-bool EditingManager::isRedoStackEmtpy()
+bool EditingManager::isRedoStackEmpty()
 {
     if(redoStack.empty())
     {

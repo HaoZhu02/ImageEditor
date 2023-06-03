@@ -19,6 +19,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     //disable action not used before Image upload
 
+    ui->actionRedo->setEnabled(false);
+    ui->actionUndo->setEnabled(false);
+    ui->menuEdit->setEnabled(false);
+    ui->menuView->setEnabled(false);
+    ui->menuFilters->setEnabled(false);
+    ui->actionSave->setEnabled(false);
+
+
     ui->statusbar->addPermanentWidget(&imageName);
     ui->statusbar->addPermanentWidget(&imageSize);
     activeImage.reset();
@@ -63,6 +71,13 @@ void MainWindow::on_actionOpen_triggered()
 
 
             ui->menuEdit->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
+            ui->actionUndo->setEnabled(false);
+            ui->actionSave->setEnabled(false);
+            ui->menuView->setEnabled(true);
+            ui->menuFilters->setEnabled(true);
+
+
 
             pendingSaveModifications = false;
         }
@@ -111,6 +126,9 @@ void MainWindow::on_actionCrop_triggered()
             pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
 
             pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
         }
     }
 }
@@ -146,6 +164,9 @@ void MainWindow::on_actionBrightness_triggered()
             pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
 
             pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
         }
     }
 }
@@ -167,6 +188,9 @@ void MainWindow::on_actionRotate_Clockwise_triggered()
 
 
         pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
     }
 }
 
@@ -188,6 +212,9 @@ void MainWindow::on_actionContrast_triggered()
             pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
 
             pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
         }
     }
 }
@@ -248,6 +275,68 @@ void MainWindow::on_actionZoom_Out_triggered()
     }
 }
 
+// Aspect Ratio Event-Handler
+void MainWindow::on_actionAspect_Ratio_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        ui->graphicsView->fitInView(pixmapItem, Qt::KeepAspectRatio);
+    }
+}
+
+
+// Undo Event-Handler
+void MainWindow::on_actionUndo_triggered()
+{
+    if(activeImage!= nullptr && !editingManager.isUndoStackEmpty())
+    {
+        editingManager.undo();
+        activeImage->updateBuffer();
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
+        on_actionAspect_Ratio_triggered();
+
+        // Set the stack
+        pendingSaveModifications = true;
+        ui->actionRedo->setEnabled(true);
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+
+        // If empty no longer allow click
+        if(editingManager.isUndoStackEmpty())
+        {
+            ui->actionUndo->setEnabled(false);
+        }
+    }
+}
+
+
+// Redo Event-Handler
+void MainWindow::on_actionRedo_triggered()
+{
+    if(activeImage!= nullptr && !editingManager.isRedoStackEmpty())
+    {
+        editingManager.redo();
+        activeImage->updateBuffer();
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
+        on_actionAspect_Ratio_triggered();
+
+        // Set the Stack
+        pendingSaveModifications = true;
+        ui->actionUndo->setEnabled(true);
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+
+        // If empty no longer allow click
+        if(editingManager.isRedoStackEmpty())
+        {
+            ui->actionRedo->setEnabled(false);
+        }
+    }
+}
 
 
 

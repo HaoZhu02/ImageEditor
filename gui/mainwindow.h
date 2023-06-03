@@ -34,6 +34,11 @@ private slots:
     void on_actionContrast_triggered();
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
+    void on_actionRedo_triggered();
+    void on_actionUndo_triggered();
+    void on_actionAspect_Ratio_triggered();
+
+
 
 protected slots:
     void zoomTool(bool zoomStatus);
