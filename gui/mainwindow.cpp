@@ -152,7 +152,7 @@ void MainWindow::on_actionBrightness_triggered()
 
 
 // Rotate-Clockwise Event-Handler
-void MainWindow::on_actionRotateClockwise_triggered()
+void MainWindow::on_actionRotate_Clockwise_triggered()
 {
     if(activeImage!= nullptr) {
         std::shared_ptr<ImageEdit> c1(new RotateClockwiseTool(*activeImage));
@@ -171,8 +171,82 @@ void MainWindow::on_actionRotateClockwise_triggered()
 }
 
 
+// Contrast Event-Handler
+void MainWindow::on_actionContrast_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        bool valid = false;
+        QList<QString> field = {"Contrast"};
+        QList<int> input = InputDialog::getFields(this, field, -100, 100, 10, &valid);
+
+        if(valid){
+            int inputValue = input[0];
+            std::shared_ptr<ImageEdit>c1(new ContrastTool(*activeImage, inputValue));
+            editingManager.execute(c1);
+            activeImage->updateBuffer();
+            pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+            pendingSaveModifications = true;
+        }
+    }
+}
 
 
+// UI Zooming Logic
+void MainWindow::zoomTool(bool zoomStatus)
+{
+    if(activeImage!=nullptr)
+    {
+        double zoom = ui->graphicsView->transform().m11() * 100;
+
+        if(zoomStatus)
+        {
+            for(double z: zoomList)
+            {
+                if((z - z / 10) > zoom)
+                {
+                    zoom = z;
+                    break;
+                }
+            }
+        }
+
+        else{
+            for(int i = zoomList.count()-1; i > 0; i--)
+            {
+                double zooming = zoomList[i];
+                if((zooming + zooming / 10) < zoom)
+                {
+                    zoom = zooming;
+                    break;
+                }
+            }
+        }
+
+        ui->graphicsView->setTransform(QTransform::fromScale(zoom / 100, zoom / 100));
+    }
+}
+
+
+// Zoom-In Event-Handler
+void MainWindow::on_actionZoom_In_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        zoomTool(true);
+    }
+}
+
+
+// Zoom-Out Event-Handler
+void MainWindow::on_actionZoom_Out_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        zoomTool(false);
+    }
+}
 
 
 

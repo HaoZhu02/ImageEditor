@@ -30,10 +30,13 @@ private slots:
     void on_actionCrop_triggered();
     void on_actionSave_triggered();
     void on_actionBrightness_triggered();
-    void on_actionRotateClockwise_triggered();
+    void on_actionRotate_Clockwise_triggered();
+    void on_actionContrast_triggered();
+    void on_actionZoom_In_triggered();
+    void on_actionZoom_Out_triggered();
 
 protected slots:
-
+    void zoomTool(bool zoomStatus);
 
 private:
     Ui::MainWindow *ui;

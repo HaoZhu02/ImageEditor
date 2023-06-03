@@ -53,18 +53,39 @@
     <property name="title">
      <string>Edit</string>
     </property>
-    <widget class="QMenu" name="menuRotation">
+    <addaction name="actionCrop"/>
+    <addaction name="actionBrightness"/>
+   </widget>
+   <widget class="QMenu" name="menuFilters">
+    <property name="title">
+     <string>Filters</string>
+    </property>
+    <addaction name="actionContrast"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuRotation_2">
      <property name="title">
       <string>Rotation</string>
      </property>
-     <addaction name="actionRotateClockwise"/>
+     <addaction name="actionRotate_Clockwise"/>
     </widget>
-    <addaction name="actionCrop"/>
-    <addaction name="actionBrightness"/>
-    <addaction name="menuRotation"/>
+    <widget class="QMenu" name="menuZoom">
+     <property name="title">
+      <string>Zoom</string>
+     </property>
+     <addaction name="actionZoom_In"/>
+     <addaction name="actionZoom_Out"/>
+    </widget>
+    <addaction name="menuRotation_2"/>
+    <addaction name="menuZoom"/>
    </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuView"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuFilters"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionOpen">
@@ -87,9 +108,24 @@
     <string>Brightness</string>
    </property>
   </action>
-  <action name="actionRotateClockwise">
+  <action name="actionContrast">
    <property name="text">
-    <string>RotateClockwise</string>
+    <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionRotate_Clockwise">
+   <property name="text">
+    <string>Rotate Clockwise</string>
+   </property>
+  </action>
+  <action name="actionZoom_In">
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
    </property>
   </action>
  </widget>
