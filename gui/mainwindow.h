@@ -29,7 +29,8 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionCrop_triggered();
     void on_actionSave_triggered();
-
+    void on_actionBrightness_triggered();
+    void on_actionRotateClockwise_triggered();
 
 protected slots:
 

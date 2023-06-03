@@ -116,6 +116,7 @@ void MainWindow::on_actionCrop_triggered()
 }
 
 
+// Save Event-Handler
 void MainWindow::on_actionSave_triggered()
 {
     if(activeImage!=nullptr)
@@ -125,3 +126,69 @@ void MainWindow::on_actionSave_triggered()
         pendingSaveModifications = false;
     }
 }
+
+
+// Brightness Event-Handler
+void MainWindow::on_actionBrightness_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        bool valid = false;
+        QList<QString> field = {"Brightness"};
+        QList<int> input = InputDialog::getFields(this, field, -100, 100, 10, &valid);
+
+        if(valid)
+        {
+            int inputValue = input[0];
+            std::shared_ptr<ImageEdit> c1(new BrightnessTool(*activeImage, inputValue));
+            editingManager.execute(c1);
+            activeImage->updateBuffer();
+            pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+            pendingSaveModifications = true;
+        }
+    }
+}
+
+
+// Rotate-Clockwise Event-Handler
+void MainWindow::on_actionRotateClockwise_triggered()
+{
+    if(activeImage!= nullptr) {
+        std::shared_ptr<ImageEdit> c1(new RotateClockwiseTool(*activeImage));
+        editingManager.execute(c1);
+
+        //qDebug() << "rotate clockwise";
+
+        activeImage->updateBuffer();
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+        scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
+        // test
+
+
+        pendingSaveModifications = true;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
