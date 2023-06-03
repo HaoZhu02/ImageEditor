@@ -398,8 +398,25 @@ void MainWindow::on_actionGray_Scale_triggered()
     }
 }
 
+// Sharpen Event Handler
+void MainWindow::on_actionSharpen_triggered()
+{
+    if(activeImage!= nullptr) {
 
+        // Execute Sharpen
+        std::shared_ptr<ImageEdit> c1(new SharpenTool(*activeImage));
+        editingManager.execute(c1);
+        activeImage->updateBuffer();
 
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        // Set Stack
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+    }
+}
 
 
 
