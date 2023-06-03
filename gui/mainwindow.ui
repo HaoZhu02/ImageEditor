@@ -158,6 +158,11 @@
     <string>Gray Scale</string>
    </property>
   </action>
+  <action name="actionSharpen">
+   <property name="text">
+    <string>Sharpen</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
