@@ -3,6 +3,8 @@
 
 #include "editingmanager.h"
 #include "croptool.h"
+#include "brightnesstool.h"
+#include "rotateclockwisetool.h"
 
 
 
