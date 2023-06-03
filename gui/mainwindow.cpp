@@ -125,6 +125,8 @@ void MainWindow::on_actionCrop_triggered()
             activeImage->updateBuffer();
             pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
 
+            on_actionAspect_Ratio_triggered();
+
             pendingSaveModifications = true;
             ui->actionSave->setEnabled(true);
             ui->actionUndo->setEnabled(true);
@@ -340,7 +342,39 @@ void MainWindow::on_actionRedo_triggered()
 
 
 
+// Resize Event-Handler
+void MainWindow::on_actionResize_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        bool valid = false;
+        QList<QString> fields = {"Width", "Height"};
+        QList<int> values = InputDialog::getFields(this, fields, 1, 10000, 100, &valid);
 
+
+        if(valid)
+        {
+            int w = values[0];
+            int h = values[1];
+
+            // execute the resize
+            std::shared_ptr<ImageEdit> c(new ResizeTool(*activeImage, w, h));
+            editingManager.execute(c);
+            activeImage->updateBuffer();
+
+            // Display
+            pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+            scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
+            on_actionAspect_Ratio_triggered();
+
+            // Set Stack
+            pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
+        }
+    }
+}
 
 
 

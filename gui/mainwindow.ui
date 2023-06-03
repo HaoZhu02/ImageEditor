@@ -57,6 +57,7 @@
     <addaction name="actionRedo"/>
     <addaction name="actionCrop"/>
     <addaction name="actionBrightness"/>
+    <addaction name="actionResize"/>
    </widget>
    <widget class="QMenu" name="menuFilters">
     <property name="title">
@@ -138,6 +139,11 @@
   <action name="actionRedo">
    <property name="text">
     <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionResize">
+   <property name="text">
+    <string>Resize</string>
    </property>
   </action>
  </widget>
