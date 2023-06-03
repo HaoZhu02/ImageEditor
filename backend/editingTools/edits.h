@@ -6,7 +6,7 @@
 #include "brightnesstool.h"
 #include "rotateclockwisetool.h"
 #include "contrasttool.h"
-#include "scaletool.h"
+#include "resizetool.h".h"
 
 
 #endif // EDITS_H
