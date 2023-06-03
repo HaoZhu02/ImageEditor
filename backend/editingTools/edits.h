@@ -5,7 +5,8 @@
 #include "croptool.h"
 #include "brightnesstool.h"
 #include "rotateclockwisetool.h"
-
+#include "contrasttool.h"
+#include "scaletool.h"
 
 
 #endif // EDITS_H
