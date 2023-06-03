@@ -27,6 +27,18 @@ set(BACKEND
         backend/editingTools/edits.h
         backend/editingTools/editingmanager.h
         backend/editingTools/editingmanager.cpp
+        backend/editingTools/convolutionfilter.h
+        backend/editingTools/convolutionfilter.cpp
+        backend/editingTools/brightnesstool.h
+        backend/editingTools/brightnesstool.cpp
+        backend/editingTools/rotateclockwisetool.h
+        backend/editingTools/rotateclockwisetool.cpp
+        backend/editingTools/contrasttool.h
+        backend/editingTools/contrasttool.cpp
+        backend/editingTools/resizetool.h
+        backend/editingTools/resizetool.cpp
+        backend/editingTools/grayscaletool.h
+        backend/editingTools/grayscaletool.cpp
 )
 
 set(GUI
