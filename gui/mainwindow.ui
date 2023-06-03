@@ -56,14 +56,13 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
     <addaction name="actionCrop"/>
-    <addaction name="actionBrightness"/>
     <addaction name="actionResize"/>
    </widget>
    <widget class="QMenu" name="menuFilters">
     <property name="title">
      <string>Filters</string>
     </property>
-    <addaction name="actionContrast"/>
+    <addaction name="actionGray_Scale"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -85,9 +84,17 @@
     <addaction name="menuRotation_2"/>
     <addaction name="menuZoom"/>
    </widget>
+   <widget class="QMenu" name="menuColor">
+    <property name="title">
+     <string>Color</string>
+    </property>
+    <addaction name="actionBrightness"/>
+    <addaction name="actionContrast"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuColor"/>
    <addaction name="menuFilters"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -104,16 +111,6 @@
   <action name="actionSave">
    <property name="text">
     <string>Save</string>
-   </property>
-  </action>
-  <action name="actionBrightness">
-   <property name="text">
-    <string>Brightness</string>
-   </property>
-  </action>
-  <action name="actionContrast">
-   <property name="text">
-    <string>Contrast</string>
    </property>
   </action>
   <action name="actionRotate_Clockwise">
@@ -144,6 +141,21 @@
   <action name="actionResize">
    <property name="text">
     <string>Resize</string>
+   </property>
+  </action>
+  <action name="actionContrast">
+   <property name="text">
+    <string>Contrast</string>
+   </property>
+  </action>
+  <action name="actionBrightness">
+   <property name="text">
+    <string>Brightness</string>
+   </property>
+  </action>
+  <action name="actionGray_Scale">
+   <property name="text">
+    <string>Gray Scale</string>
    </property>
   </action>
  </widget>

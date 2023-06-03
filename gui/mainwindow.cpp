@@ -377,7 +377,26 @@ void MainWindow::on_actionResize_triggered()
 }
 
 
+// Gray Scale Event Handler
+void MainWindow::on_actionGray_Scale_triggered()
+{
+    if(activeImage!= nullptr)
+    {
+        // Execute GrayScale
+        std::shared_ptr<ImageEdit> c1(new GrayScaleTool(*activeImage));
+        editingManager.execute(c1);
+        activeImage->updateBuffer();
 
+        // Display
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        // Set Stack
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+    }
+}
 
 
 
