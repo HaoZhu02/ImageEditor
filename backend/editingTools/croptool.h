@@ -12,11 +12,10 @@ private:
 
     // Reference and Backup
     Image& originalImage;
-    //Image croppedImage;
+    Image backupImage;
     std::vector<Pixel>& pixelBuffer;
     std::vector<Pixel> backupPixelBuffer;
     QImage tempImage;
-
     int topLeftX;
     int topLeftY;
     int width;
@@ -24,6 +23,7 @@ private:
 
     // Cropping
     void crop();
+    void cropLimit();
 
 public:
     // Constructor

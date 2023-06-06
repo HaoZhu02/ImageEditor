@@ -10,7 +10,7 @@ SharpenTool::SharpenTool(Image &anImage) : anImage(anImage), pixelBuffer(anImage
 void SharpenTool::sharpen(){
 
     // Laplacian Kernel
-    double sharpenConv[3][3] = {{0, 0, 0},
+    double sharpenConv[3][3] = {{0, -1, 0},
                                {-1, 5,  -1},
                                {0, -1, 0}};
 

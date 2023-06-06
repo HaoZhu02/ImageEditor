@@ -60,7 +60,8 @@ public:
     bool isValid() const;
 
     Image& operator= (Image& anImage);
-    
+
+
 };
 
 #endif

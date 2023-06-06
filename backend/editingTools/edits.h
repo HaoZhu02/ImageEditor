@@ -14,6 +14,7 @@
 #include "warmingtool.h"
 #include "coolingtool.h"
 #include "thresholdtool.h"
+#include "addtexttool.h"
 
 
 
