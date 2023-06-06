@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menuView->setEnabled(false);
     ui->menuFilters->setEnabled(false);
     ui->actionSave->setEnabled(false);
+    ui->actionSave_as->setEnabled(false);
 
 
     ui->statusbar->addPermanentWidget(&imageName);
@@ -51,12 +52,12 @@ void MainWindow::on_actionOpen_triggered()
     QString imagePath = QFileDialog::getOpenFileName(this,
         tr("Open Image"), "", tr("Image Files (*.png *.jpg *.bmp)"));
 
-    if(!imagePath.isEmpty()){
+    if(!imagePath.isEmpty())
+    {
         activeImage.reset(new Image(imagePath));
 
-        if(activeImage->isValid()){
-
-            qDebug() << activeImage->getFilename();
+        if(activeImage->isValid())
+        {
 
             scene.clear();
             pixmapItem = scene.addPixmap(QPixmap::fromImage(activeImage->getQImage()));
@@ -65,7 +66,7 @@ void MainWindow::on_actionOpen_triggered()
 
             ui->graphicsView->show();
 
-            //updateStatusBar();
+            updateStatusBar();
             ui->statusbar->show();
             ui->graphicsView->fitInView(pixmapItem, Qt::KeepAspectRatio);
 
@@ -76,6 +77,7 @@ void MainWindow::on_actionOpen_triggered()
             ui->actionSave->setEnabled(false);
             ui->menuView->setEnabled(true);
             ui->menuFilters->setEnabled(true);
+            ui->actionSave_as->setEnabled(true);
 
 
 
@@ -87,6 +89,12 @@ void MainWindow::on_actionOpen_triggered()
             ui->graphicsView->hide();
             ui->statusbar->hide();
 
+            ui->actionSave->setEnabled(false);
+            ui->actionRedo->setEnabled(false);
+            ui->actionUndo->setEnabled(false);
+            ui->menuView->setEnabled(false);
+            ui->menuEdit->setEnabled(false);
+
 
             ui->menuEdit->setEnabled(false);
 
@@ -96,6 +104,19 @@ void MainWindow::on_actionOpen_triggered()
         }
     }
 }
+
+
+// Updating Status Bar
+void MainWindow::updateStatusBar()
+{
+    if(activeImage!=nullptr)
+    {
+        imageName.setText(activeImage->getFilename());
+        imageSize.setText(QString("%1x%2").arg(activeImage->getWidth()).arg(activeImage->getHeight()));
+    }
+}
+
+
 
 
 // Crop Event-Handler
@@ -148,6 +169,34 @@ void MainWindow::on_actionSave_triggered()
 }
 
 
+// Save As Event-Handler
+void MainWindow::on_actionSave_as_triggered()
+{
+    if(activeImage!= nullptr)
+    {
+        QString filename = QFileDialog::getSaveFileName(this, "", activeImage->getFilename(), tr("Images (*.jpg *.png *.bmp)"));
+
+        if(!filename.isEmpty())
+        {
+            if(activeImage->save(filename))
+            {
+                activeImage->setFilePath(filename);
+                updateStatusBar();
+
+                pendingSaveModifications = false;
+                ui->actionSave->setEnabled(false);
+            }
+            else{
+                QMessageBox::critical(this, "Image Editor",
+                                      "The path is not valid. Please check the image format.",
+                                      QMessageBox::Ok);
+            }
+        }
+    }
+}
+
+
+
 // Brightness Event-Handler
 void MainWindow::on_actionBrightness_triggered()
 {
@@ -177,7 +226,8 @@ void MainWindow::on_actionBrightness_triggered()
 // Rotate-Clockwise Event-Handler
 void MainWindow::on_actionRotate_Clockwise_triggered()
 {
-    if(activeImage!= nullptr) {
+    if(activeImage!= nullptr)
+    {
         std::shared_ptr<ImageEdit> c1(new RotateClockwiseTool(*activeImage));
         editingManager.execute(c1);
 
@@ -195,6 +245,27 @@ void MainWindow::on_actionRotate_Clockwise_triggered()
         ui->actionRedo->setEnabled(false);
     }
 }
+
+
+// Rotate Anti-clockwise Event-Handler
+void MainWindow::on_actionRotate_Anti_triggered()
+{
+    if(activeImage != nullptr)
+    {
+        std::shared_ptr<ImageEdit> c1(new RotateAnti(*activeImage));
+        editingManager.execute(c1);
+
+        activeImage->updateBuffer();
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+        scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
+
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+    }
+}
+
 
 
 // Contrast Event-Handler
@@ -398,10 +469,12 @@ void MainWindow::on_actionGray_Scale_triggered()
     }
 }
 
+
 // Sharpen Event Handler
 void MainWindow::on_actionSharpen_triggered()
 {
-    if(activeImage!= nullptr) {
+    if(activeImage!= nullptr)
+    {
 
         // Execute Sharpen
         std::shared_ptr<ImageEdit> c1(new SharpenTool(*activeImage));
@@ -417,6 +490,129 @@ void MainWindow::on_actionSharpen_triggered()
         ui->actionRedo->setEnabled(false);
     }
 }
+
+
+// Blur Event Handler
+void MainWindow::on_actionBlur_triggered()
+{
+    if(activeImage != nullptr)
+    {
+        // Execute Blur
+        std::shared_ptr<ImageEdit> c1(new BlurTool(*activeImage));
+        editingManager.execute(c1);
+        activeImage->updateBuffer();
+
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        // Set the Stack
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+
+    }
+}
+
+
+// Closing Event
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(pendingSaveModifications && !ui->graphicsView->isHidden())
+    {
+
+        QString title = "Image Editor";
+        QString message = "<p>Any unsaved changes will be lost. Do you wish close the app?</p>";
+
+        int status = QMessageBox::question(this, title, message, QMessageBox::Ok, QMessageBox::Cancel);
+
+        if(status == QMessageBox::Ok)
+        {
+            event->accept();
+        }
+        else{
+            event->ignore();
+        }
+    }
+    else{
+        event->accept();
+    }
+}
+
+
+// Warming Event-Handler
+void MainWindow::on_actionWarming_triggered()
+{
+    if(activeImage!= nullptr)
+    {
+        // Execute GrayScale
+        std::shared_ptr<ImageEdit> c1(new WarmingTool(*activeImage));
+        editingManager.execute(c1);
+        activeImage->updateBuffer();
+
+        // Display
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        // Set Stack
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+    }
+}
+
+
+// Cooling Event-Handler
+void MainWindow::on_actionCooling_triggered()
+{
+    if(activeImage!= nullptr)
+    {
+        // Execute GrayScale
+        std::shared_ptr<ImageEdit> c1(new CoolingTool(*activeImage));
+        editingManager.execute(c1);
+        activeImage->updateBuffer();
+
+        // Display
+        pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+        // Set Stack
+        pendingSaveModifications = true;
+        ui->actionSave->setEnabled(true);
+        ui->actionUndo->setEnabled(true);
+        ui->actionRedo->setEnabled(false);
+    }
+}
+
+
+// Threshold Event-Handler
+void MainWindow::on_actionThreshold_triggered()
+{
+    if(activeImage!=nullptr)
+    {
+        bool valid = false;
+        QList<QString> field = {"Threshold"};
+        QList<int> input = InputDialog::getFields(this, field, 0, 255, 5, &valid);
+
+        if(valid)
+        {
+            // Threshold Execute
+            int inputValue = input[0];
+            std::shared_ptr<ImageEdit> c1(new ThresholdTool(*activeImage, inputValue));
+            editingManager.execute(c1);
+
+            // Display
+            activeImage->updateBuffer();
+            pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+
+            // Set Stack
+            pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
+        }
+    }
+}
+
 
 
 

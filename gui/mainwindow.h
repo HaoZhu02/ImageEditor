@@ -29,8 +29,10 @@ private slots:
     void on_actionOpen_triggered();
     void on_actionCrop_triggered();
     void on_actionSave_triggered();
+    void on_actionSave_as_triggered();
     void on_actionBrightness_triggered();
     void on_actionRotate_Clockwise_triggered();
+    void on_actionRotate_Anti_triggered();
     void on_actionContrast_triggered();
     void on_actionZoom_In_triggered();
     void on_actionZoom_Out_triggered();
@@ -40,6 +42,12 @@ private slots:
     void on_actionResize_triggered();
     void on_actionGray_Scale_triggered();
     void on_actionSharpen_triggered();
+    void on_actionBlur_triggered();
+    void on_actionWarming_triggered();
+    void on_actionCooling_triggered();
+    void on_actionThreshold_triggered();
+
+
 
 protected slots:
     void zoomTool(bool zoomStatus);
@@ -61,6 +69,8 @@ private:
 
 
 protected:
+    void closeEvent(QCloseEvent *event) override;
+    void updateStatusBar();
 
 
 };
