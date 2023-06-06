@@ -41,6 +41,16 @@ set(BACKEND
         backend/editingTools/grayscaletool.cpp
         backend/editingTools/sharpentool.h
         backend/editingTools/sharpentool.cpp
+        backend/editingTools/blurtool.h
+        backend/editingTools/blurtool.cpp
+        backend/editingTools/rotateanti.h
+        backend/editingTools/rotateanti.cpp
+        backend/editingTools/warmingtool.h
+        backend/editingTools/warmingtool.cpp
+        backend/editingTools/coolingtool.h
+        backend/editingTools/coolingtool.cpp
+        backend/editingTools/thresholdtool.h
+        backend/editingTools/thresholdtool.cpp
 )
 
 set(GUI
