@@ -1,5 +1,4 @@
 #include "inputdialog.h"
-
 #include <QLabel>
 #include <QSpinBox>
 #include <QDialogButtonBox>

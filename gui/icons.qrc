@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/open.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/undo.png</file>
+        <file>icons/crop.png</file>
+        <file>icons/rotateAnti.png</file>
+        <file>icons/rotateClock.png</file>
+        <file>icons/zoomIn.png</file>
+        <file>icons/zoomOut.png</file>
+    </qresource>
+
+</RCC>

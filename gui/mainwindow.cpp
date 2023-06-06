@@ -6,14 +6,27 @@
 #include <QInputDialog>
 #include <QList>
 #include "inputdialog.h"
+#include "inputstringdialog.h"
+#include <QLabel>
+#include <QMouseEvent>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QObject>
 
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow),
+    pixmapItem(nullptr),
     pendingSaveModifications(false)
 {
     ui->setupUi(this);
+    ui->graphicsView->setMouseTracking(true);
+    ui->graphicsView->viewport()->installEventFilter(this); // Install event filter
+    //graphicsView = ui->graphicsView;
+
+
+
     ui->graphicsView->hide();
     ui->statusbar->hide();
 
@@ -26,10 +39,23 @@ MainWindow::MainWindow(QWidget *parent)
     ui->menuFilters->setEnabled(false);
     ui->actionSave->setEnabled(false);
     ui->actionSave_as->setEnabled(false);
+    ui->menuColor->setEnabled(false);
 
 
     ui->statusbar->addPermanentWidget(&imageName);
     ui->statusbar->addPermanentWidget(&imageSize);
+    ui->statusbar->addPermanentWidget(&cursorPositionLabel);
+
+    // Set style sheet for imageName label
+    imageName.setStyleSheet("color: #FFFFFF; font-family: Arial; font-size: 15px; padding: 5px;");
+
+    // Set style sheet for imageSize label
+    imageSize.setStyleSheet("color: #FFFFFF; font-family: Arial; font-size: 15px; padding: 5px;");
+
+    // Set style sheet for cursorPositionLabel label
+    cursorPositionLabel.setStyleSheet("color: #FFFFFF; font-family: Arial; font-size: 15px; padding: 5px;");
+
+
     activeImage.reset();
 
     //geometric zoom list
@@ -39,7 +65,49 @@ MainWindow::MainWindow(QWidget *parent)
     zoomList << 1000 << 1500 << 2200 << 3300 << 4700 << 6800;
 
 
+
 }
+
+
+
+// Tracking the mouse position
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
+{
+    if (activeImage != nullptr)
+    {
+        QPointF mousePos = ui->graphicsView->mapToScene(event->pos());
+        QPointF imagePos = pixmapItem->mapFromScene(mousePos);
+        QRectF imageRect = pixmapItem->boundingRect();
+
+        if (imageRect.contains(imagePos))
+        {
+            cursorPosition = imagePos.toPoint();
+            updateStatusBar();
+        }
+    }
+}
+
+
+// Event Filter to track mouse all the time (HOVER)
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui->graphicsView->viewport() && event->type() == QEvent::MouseMove)
+    {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        QPointF mousePos = ui->graphicsView->mapToScene(mouseEvent->pos());
+        QPointF imagePos = pixmapItem->mapFromScene(mousePos);
+        QRectF imageRect = pixmapItem->boundingRect();
+
+        if (imageRect.contains(imagePos))
+        {
+            cursorPosition = imagePos.toPoint();
+            updateStatusBar();
+        }
+    }
+    return QMainWindow::eventFilter(obj, event);
+}
+
+
 
 MainWindow::~MainWindow()
 {
@@ -64,14 +132,20 @@ void MainWindow::on_actionOpen_triggered()
             scene.setSceneRect(0, 0, activeImage->getWidth(), activeImage->getHeight());
             ui->graphicsView->setScene(&scene);
 
+
+
             ui->graphicsView->show();
 
             updateStatusBar();
             ui->statusbar->show();
             ui->graphicsView->fitInView(pixmapItem, Qt::KeepAspectRatio);
 
+            ui->graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
+            updateStatusBar();
+
 
             ui->menuEdit->setEnabled(true);
+            ui->menuColor->setEnabled(true);
             ui->actionRedo->setEnabled(false);
             ui->actionUndo->setEnabled(false);
             ui->actionSave->setEnabled(false);
@@ -109,10 +183,12 @@ void MainWindow::on_actionOpen_triggered()
 // Updating Status Bar
 void MainWindow::updateStatusBar()
 {
-    if(activeImage!=nullptr)
+    if (activeImage != nullptr)
     {
         imageName.setText(activeImage->getFilename());
         imageSize.setText(QString("%1x%2").arg(activeImage->getWidth()).arg(activeImage->getHeight()));
+        QString cursorPos = QString("Cursor: %1, %2").arg(cursorPosition.x()).arg(cursorPosition.y());
+        cursorPositionLabel.setText(cursorPos);
     }
 }
 
@@ -125,6 +201,7 @@ void MainWindow::on_actionCrop_triggered()
     if(activeImage!=nullptr)
     {
         bool valid = false;
+
         QList<QString> fields = {"TopLeftX", "TopLeftY", "Width", "Height"};
         QList<int> input = InputDialog::getFields(this, fields, 0, 10000, 10, &valid);
 
@@ -155,6 +232,8 @@ void MainWindow::on_actionCrop_triggered()
         }
     }
 }
+
+
 
 
 // Save Event-Handler
@@ -613,6 +692,39 @@ void MainWindow::on_actionThreshold_triggered()
     }
 }
 
+
+// Add Text Event-Handler
+void MainWindow::on_actionAdd_Text_triggered()
+{
+    if (activeImage != nullptr)
+    {
+        bool valid = false;
+        QList<QString> fields1 = {"Bottom-Left X", "Bottom-Left Y"};
+        QList<int> input1 = InputDialog::getFields(this, fields1, 0, 10000, 10, &valid);
+
+        QList<QString> fields = {"Text"};
+        QList<QString> input = InputStringDialog::getStringFields(this, fields, &valid);
+
+        if (valid)
+        {
+            int x = input1[0];
+            int y = input1[1];
+            QString text = input[0];
+
+            std::shared_ptr<ImageEdit> addText(new AddTextTool(*activeImage, x, y, text));
+            editingManager.execute(addText);
+
+            activeImage->updateBuffer();
+            pixmapItem->setPixmap(QPixmap::fromImage(activeImage->getQImage()));
+
+            pendingSaveModifications = true;
+            ui->actionSave->setEnabled(true);
+            ui->actionUndo->setEnabled(true);
+            ui->actionRedo->setEnabled(false);
+
+        }
+    }
+}
 
 
 

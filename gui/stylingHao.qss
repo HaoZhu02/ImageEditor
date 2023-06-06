@@ -1,0 +1,43 @@
+/* Global styles */
+QMainWindow {
+    background-color: #222222;
+}
+
+QWidget {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+QLabel {
+    font-size: 14px;
+    color: #FFFFFF;
+}
+
+QMenuBar {
+    background-color: #333333;
+    color: #FFFFFF;
+}
+
+QMenu {
+    background-color: #333333;
+    color: #FFFFFF;
+    border: none;
+}
+
+QMenu::item {
+    padding: 8px 16px;
+}
+
+QMenu::item:selected {
+    background-color: #555555;
+}
+
+/* Specific widget styles */
+QGraphicsView {
+    background-color: #444444;
+}
+
+QStatusBar {
+    background-color: #555555;
+    color: #FFFFFF;
+}

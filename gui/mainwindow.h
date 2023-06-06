@@ -1,6 +1,9 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMouseEvent>
+#include <QApplication>
+#include <QEvent>
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
@@ -24,6 +27,10 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+//public slots:
+    //void displayCursorPosition(const QPoint& pos);
+
+
 
 private slots:
     void on_actionOpen_triggered();
@@ -46,6 +53,7 @@ private slots:
     void on_actionWarming_triggered();
     void on_actionCooling_triggered();
     void on_actionThreshold_triggered();
+    void on_actionAdd_Text_triggered();
 
 
 
@@ -67,10 +75,17 @@ private:
     QLabel imageName;
     QLabel imageSize;
 
+    QPoint cursorPosition;
+    QLabel cursorPositionLabel;
+    //QGraphicsView* graphicsView;
 
 protected:
     void closeEvent(QCloseEvent *event) override;
     void updateStatusBar();
+    void mouseMoveEvent(QMouseEvent* event) override;
+    bool eventFilter(QObject *obj, QEvent *event) override;
+
+
 
 
 };
