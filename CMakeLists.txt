@@ -51,6 +51,9 @@ set(BACKEND
         backend/editingTools/coolingtool.cpp
         backend/editingTools/thresholdtool.h
         backend/editingTools/thresholdtool.cpp
+        backend/editingTools/addtexttool.h
+        backend/editingTools/addtexttool.cpp
+
 )
 
 set(GUI
@@ -59,6 +62,9 @@ set(GUI
         gui/mainwindow.cpp
         gui/mainwindow.h
         gui/mainwindow.ui
+        gui/inputstringdialog.h
+        gui/inputstringdialog.cpp
+        gui/icons.qrc
 )
 
 
@@ -66,9 +72,12 @@ set(GUI
 # Create the executable target
 add_executable(${PROJECT_NAME} ${BACKEND} ${GUI})
 
-# Link OpenCV libraries
+# Link Qt libraries
 
 target_link_libraries(ProjectImageEdit Qt6::Widgets Qt6::Core)
+
+
+
 
 
 
