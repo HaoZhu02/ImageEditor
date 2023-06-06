@@ -5,8 +5,16 @@
 #include "croptool.h"
 #include "brightnesstool.h"
 #include "rotateclockwisetool.h"
+#include "rotateanti.h"
 #include "contrasttool.h"
 #include "resizetool.h"
 #include "grayscaletool.h"
+#include "sharpentool.h"
+#include "blurtool.h"
+#include "warmingtool.h"
+#include "coolingtool.h"
+#include "thresholdtool.h"
+
+
 
 #endif // EDITS_H
